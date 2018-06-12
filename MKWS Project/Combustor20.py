@@ -10,6 +10,7 @@ def showDiagrams():
     
     window = tk.Toplevel(root)
     window.title("Diagrams")
+
     imgT = ImageTk.PhotoImage(Image.open("Temperature.png"))
     panelT = tk.Label(window, image = imgT)
     panelT.grid(row = 0, column = 0)
@@ -17,6 +18,10 @@ def showDiagrams():
     imgP = ImageTk.PhotoImage(Image.open("Pressure.png"))
     panelP = tk.Label(window, image = imgP)
     panelP.grid(row = 0, column = 1, padx = 10)
+
+    imgX = ImageTk.PhotoImage(Image.open("X.png"))
+    panelX = tk.Label(window, image = imgX)
+    panelX.grid(row = 1, column = 0)
 
     window.mainloop()
     
@@ -28,7 +33,8 @@ def combustor():
     gas = ct.Solution('gri30.xml')
 
     # create a reservoir for the fuel inlet, and set to pure methane.
-    gas.TPX = 500.0, ct.one_atm, 'CH4:1.0'
+    fuelX = 'CH4:' + eCH4.get() + ',C2H6:' + eC2H6.get() + ',N2:' + eN2.get()
+    gas.TPX = float(eFuelT.get()), ct.one_atm, fuelX  
     fuel_in = ct.Reservoir(gas)
     fuel_mw = gas.mean_molecular_weight
 
@@ -40,11 +46,11 @@ def combustor():
     # to ignite the fuel/air mixture, we'll introduce a pulse of radicals. The
     # steady-state behavior is independent of how we do this, so we'll just use a
     # stream of pure atomic hydrogen.
-    gas.TPX = 300.0, ct.one_atm, 'H:1.0'
+    gas.TPX = float(eCombustorT.get()), ct.one_atm, 'H:1.0'
     igniter = ct.Reservoir(gas)
 
     # create the combustor, and fill it in initially with N2
-    gas.TPX = 300.0, ct.one_atm, 'N2:1.0'
+    gas.TPX = float(eCombustorT.get()), ct.one_atm, 'N2:1.0'
     combustor = ct.IdealGasReactor(gas)
     combustor.volume = 1.0
 
@@ -108,7 +114,6 @@ def combustor():
     plt.xlabel('Time [s]')
     plt.ylabel('Temperature [K]')
     plt.title('Temperature')
-
     plt.plot()
     plt.savefig('Temperature.png')
 
@@ -117,17 +122,22 @@ def combustor():
     plt.xlabel('Time [s]')
     plt.ylabel('Pressure [Pa]')
     plt.title('Pressure')
-    
     plt.plot()
     plt.savefig('Pressure.png')
+
+    plt.figure()
+    plt.plot(states.t, states.X(1))
+    plt.xlabel('Time [s]')
+    plt.ylabel('Concentration H20')
+    plt.title('H20')
+    plt.plot()
+    plt.savefig('X.png')
 
     print('OK!')
     
 
 def start_click(event):
-    x=float(fuelX[0].get())
     combustor()
-    print(x)
 
 root = tk.Tk()
 root.title("Combustor")
@@ -184,30 +194,32 @@ eN2.grid(row=5, column=1)
 lblFuel = tk.Label(root, text='Fuel:')
 lblFuel.grid(row=1, column=0)
 
+#Fuel Temperature widgets
 lblFuelT = tk.Label(root, text = 'Temperature [K]')
 lblFuelT.grid(row = 2, column = 0)
-
 svfT = tk.StringVar()
 svfT.set('500')
 eFuelT = tk.Entry(root, textvariable = svfT, width = 8)
 eFuelT.grid(row=2, column=1)
 
   
-lblOxidiser = tk.Label(root, text='Oxidiser:')
-lblOxidiser.grid(row=1, column=5, padx=50)
+lblOxidiser = tk.Label(root, text='Oxidiser: Air')
+lblOxidiser.grid(row=1, column=5)
+
+#Combustor Temperature 
+lblCombustorT = tk.Label(root, text = 'Combustor Temperature [K]')
+lblCombustorT.grid(row = 2, column = 5)
+svCT = tk.StringVar()
+svCT.set('300')
+eCombustorT = tk.Entry(root, textvariable = svCT, width = 8)
+eCombustorT.grid(row=2, column=6)
 
 
 
 
-
-
-
-
-fuelX = []
-fuelX.append(eCH4)
-fuelX.append(eC2H6)
-
-
+#fuelX = []
+#fuelX.append(eCH4)
+#fuelX.append(eC2H6)
 
 
 
