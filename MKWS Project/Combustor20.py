@@ -126,7 +126,7 @@ def combustor():
     plt.savefig('Pressure.png')
 
     plt.figure()
-    plt.plot(states.t, states.X(1))
+    plt.plot(states.t, states.X)
     plt.xlabel('Time [s]')
     plt.ylabel('Concentration H20')
     plt.title('H20')
