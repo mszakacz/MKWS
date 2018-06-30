@@ -25,9 +25,21 @@ def showDiagrams():
     panelP = tk.Label(window, image = imgP)
     panelP.grid(row = 0, column = 1, padx = 10)
 
-    imgX = ImageTk.PhotoImage(Image.open("X.png"))
-    panelX = tk.Label(window, image = imgX)
-    panelX.grid(row = 1, column = 0)
+    imgXH2O = ImageTk.PhotoImage(Image.open("XH2O.png"))
+    panelXH2O = tk.Label(window, image = imgXH2O)
+    panelXH2O.grid(row = 1, column = 0)
+
+    imgXCO = ImageTk.PhotoImage(Image.open("XCO.png"))
+    panelXCO = tk.Label(window, image = imgXCO)
+    panelXCO.grid(row = 1, column = 1)
+
+    imgXCO2 = ImageTk.PhotoImage(Image.open("XCO2.png"))
+    panelXCO2 = tk.Label(window, image = imgXCO2)
+    panelXCO2.grid(row = 0, column = 2)
+
+    imgXNO2 = ImageTk.PhotoImage(Image.open("XNO2.png"))
+    panelXNO2 = tk.Label(window, image = imgXNO2)
+    panelXNO2.grid(row = 1, column = 2)
 
     window.mainloop()
     
@@ -103,9 +115,9 @@ def combustor():
     # the simulation only contains one reactor
     sim = ct.ReactorNet([combustor])
 
-    # take single steps to 6 s, writing the results to a CSV file for later
-    # plotting.
-    tfinal = 4.0
+    # take single steps to 2 s, writing the results to a CSV file for later
+    # plotting
+    tfinal = 2.0
     tnow = 0.0
     Tprev = combustor.T
     tprev = tnow
@@ -139,14 +151,45 @@ def combustor():
     plt.title('Pressure')
     plt.plot()
     plt.savefig('Pressure.png')
+    
+   
+    # ciekawe: x[3] , 5, 6, 33, 35, 36, 37?, 38, 43, 
+    # ar - 48, C - 8, CO - 14, CO2 - 15
+    plt.figure()
+    plt.plot(states.t, states.X[:, [5]])
+    plt.xlabel('Time [s]')
+    plt.ylabel('Concentration H2O')
+    plt.title('H2O')
+    plt.plot()
+    plt.savefig('XH2O.png')
 
     plt.figure()
-    plt.plot(states.t, states.X)
+    plt.plot(states.t, states.X[:, [15]])
     plt.xlabel('Time [s]')
-    plt.ylabel('Concentration H20')
-    plt.title('H20')
+    plt.ylabel('Concentration CO2')
+    plt.title('CO2')
     plt.plot()
-    plt.savefig('X.png')
+    plt.savefig('XCO2.png')
+
+    plt.figure()
+    plt.plot(states.t, states.X[:, [14]])
+    plt.xlabel('Time [s]')
+    plt.ylabel('Concentration CO')
+    plt.title('CO')
+    plt.plot()
+    plt.savefig('XCO.png')
+
+    plt.figure()
+    plt.plot(states.t, states.X[:, [36]])
+    plt.xlabel('Time [s]')
+    plt.ylabel('Concentration NO2')
+    plt.title('NO2')
+    plt.plot()
+    plt.savefig('XNO2.png')
+
+
+  
+
 
     print('OK!')
     
@@ -249,17 +292,6 @@ svR = tk.StringVar()
 svR.set('0.5')
 eRatio = tk.Entry(root, textvariable = svR, width = 8)
 eRatio.grid(row=5, column=4)
-
-
-
-
-#fuelX = []
-#fuelX.append(eCH4)
-#fuelX.append(eC2H6)
-
-
-
-
 
 
 root.mainloop()
